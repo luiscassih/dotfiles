@@ -10,7 +10,13 @@ Plug 'habamax/vim-godot'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
+
+" Telescope
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'sharkdp/bat'
+Plug 'sharkdp/fd'
+Plug 'BurntSushi/ripgrep'
+Plug 'nvim-treesitter/nvim-treesitter'
 
 " Others
 Plug 'preservim/nerdtree'
@@ -58,7 +64,30 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 let mapleader = " "
 
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
 "nmap <C-p> :Files
 
 " Intellisense
@@ -81,6 +110,7 @@ let g:lightline = {
                         \ 'colorscheme': 'onedark',
                         \}
 let g:airline_theme = 'onedark'
+let g:airline_powerline_fonts = 1
 nnoremap <leader>xx :bd<CR>
 nnoremap <leader>xa :%bd<CR>
 nnoremap <leader>wp :wa<CR>
