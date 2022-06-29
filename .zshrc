@@ -100,6 +100,10 @@ source $ZSH/oh-my-zsh.sh
 alias v=nvim
 alias t=tmux
 alias ta="tmux a -t"
+lt() {
+  tree -I "node_modules" "$@" -C | less -r
+}
+alias retab='nvim -s <(echo -e "gg=G\n:retab\nZZ")'
 
 # lfcd
 lfcd () {
