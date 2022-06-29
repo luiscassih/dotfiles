@@ -4,13 +4,10 @@ vim.call('plug#begin', '~/.config/nvim/plugged')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-lua/popup.nvim'
   Plug 'nvim-telescope/telescope.nvim'
-  Plug "williamboman/nvim-lsp-installer"
   Plug 'neovim/nvim-lspconfig'
-  --Plug 'kabouzeid/nvim-lspinstall'
-  --
-  -- Plug 'glepnir/lspsaga.nvim'
-  Plug 'tami5/lspsaga.nvim'
-  --Plug 'nvim-lua/completion-nvim'
+  Plug 'kabouzeid/nvim-lspinstall'
+  Plug 'glepnir/lspsaga.nvim'
+  Plug 'nvim-lua/completion-nvim'
   Plug('nvim-treesitter/nvim-treesitter', {['do'] = function ()
     vim.cmd('TSUpdate')
     end
@@ -25,18 +22,15 @@ vim.call('plug#begin', '~/.config/nvim/plugged')
   Plug 'luiscassih/palenight-dash.vim'
 
 
-  --Plug 'psliwka/vim-smoothie'
+  Plug 'psliwka/vim-smoothie'
 
   --compe
   Plug 'hrsh7th/cmp-nvim-lsp'
   Plug 'hrsh7th/cmp-buffer'
   Plug 'hrsh7th/nvim-cmp'
-  --Plug 'L3MON4D3/LuaSnip'
-  --Plug 'saadparwaiz1/cmp_luasnip'
-  Plug 'hrsh7th/cmp-path'
-  Plug 'hrsh7th/cmp-cmdline'
-  -- Plug 'hrsh7th/cmp-vsnip'
-  -- Plug 'hrsh7th/vim-vsnip'
+  Plug 'L3MON4D3/LuaSnip'
+  Plug 'saadparwaiz1/cmp_luasnip'
+
   -- statusbar
   Plug 'hoob3rt/lualine.nvim'
   Plug 'ryanoasis/vim-devicons'
@@ -44,16 +38,8 @@ vim.call('plug#begin', '~/.config/nvim/plugged')
   -- sneak
   Plug 'justinmk/vim-sneak'
 
-  --Plug 'jiangmiao/auto-pairs'
+  Plug 'jiangmiao/auto-pairs'
   Plug 'airblade/vim-rooter'
-
-  Plug 'numToStr/Comment.nvim'
-  Plug 'ptzz/lf.vim'
-  Plug 'voldikss/vim-floaterm'
-
-  Plug 'kyazdani42/nvim-web-devicons'
-  Plug 'folke/trouble.nvim'
-  --Plug 'alvan/vim-closetag'
 vim.call('plug#end')
 
 -- settings
@@ -73,7 +59,7 @@ opt.incsearch = true
 opt.ruler = true
 opt.smartindent = true
 opt.hlsearch = false
-opt.undodir = os.getenv( "HOME" ) .. "/.config/nvim/undodir"
+opt.undodir = '/Users/lcassih/.config/nvim/undodir'
 opt.undofile = true
 opt.hidden = true
 
@@ -81,6 +67,7 @@ opt.hidden = true
 local g = vim.g
 g.noswapfile = true
 g.nobackup = true
+
 
 -- mapping
 local map = vim.api.nvim_set_keymap
@@ -120,39 +107,29 @@ opt.background = 'dark'
 --]])
 --vim.cmd('colorscheme palenight')
 vim.cmd('colorscheme palenightdash')
-vim.cmd([[
-hi Normal guibg=NONE ctermbg=NONE
-]])
 
 -- completion-nvim
---opt.completeopt = "menuone,noinsert,noselect"
-opt.completeopt = "menu,menuone,noselect"
--- opt.shortmess = opt.shortmess + "c"
+opt.completeopt = "menuone,noinsert,noselect"
+opt.shortmess = opt.shortmess + "c"
 --map('i','C-<space>', '<Plug>(completion_trigger)', { expr = true })
 local cmp = require'cmp'
 cmp.setup({
   snippet = {
     expand = function(args)
-      --require('luasnip').lsp_expand(args.body)
-      --vim.fn["vsnip#anonymous"](args.body)
+      require('luasnip').lsp_expand(args.body)
     end,
   },
-  mapping = cmp.mapping.preset.insert({
+  mapping = {
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.close(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
-  }),
-  sources = cmp.config.sources({
+  },
+  sources = {
     { name = 'nvim_lsp' },
-    --{ name = 'vsnip' }, -- For vsnip users.
-    -- { name = 'luasnip' }, -- For luasnip users.
-    -- { name = 'ultisnips' }, -- For ultisnips users.
-    -- { name = 'snippy' }, -- For snippy users.
-  }, {
     { name = 'buffer' },
-  })
+  }
 })
 
 -- lspconfig
@@ -183,28 +160,19 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'tsserver', 'html', 'tailwindcss' }
+local servers = { 'tsserver', 'html' }
 
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
---capabilities.textDocument.completion.completionItem.snippetSupport = true
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     on_attach = on_attach,
     flags = {
       debounce_text_changes = 150,
     },
-    capabilities = capabilities
+    capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
   }
 end
-
-require("nvim-lsp-installer").setup {}
---[[
-require'lspinstall'.setup()
-local servers = require'lspinstall'.installed_servers()
-for _, server in pairs(servers) do
-  require'lspconfig'[server].setup{}
-end
-]]
 
 -- lspsaga
 local saga = require 'lspsaga'
@@ -242,20 +210,9 @@ map('n','<C-]><C-]>', '<cmd>lua toggleSagaFloaterm()<cr>', { noremap = true })
 map('t','<C-]><C-]>', '<cmd>lua toggleSagaFloaterm()<cr>', { noremap = true })
 
 
--- lfcd
-
-vim.cmd([[
-let g:lf_map_keys = 0
-let g:lf_width = 0.9
-let g:lf_height = 0.7
-]])
-map('n','<leader>l', '<cmd>:Lf<cr>', { noremap = true })
-
-
 -- treesitter
-
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "c", "c_sharp", "cpp", "css", "gdscript", "go", "html", "java", "javascript", "json", "kotlin", "regex", "python", "scss", "tsx", "typescript", "vim", "vue", "yaml" }, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   highlight = {
     enable = true,              -- false will disable the whole extension
     disable = {},  -- list of language that will be disabled
@@ -264,30 +221,17 @@ require'nvim-treesitter.configs'.setup {
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
     -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
-    autotag = {
-      enable = true,
-    }
   },
 }
 
-
--- trouble
-require("trouble").setup {}
-
-require('telescope').setup({
-  defaults = {
-    hidden=true,
-    no_ignore=true,
-  }
-});
-
 -- telescope
-map('n','<leader>f', '<cmd>lua require("telescope.builtin").find_files()<cr>', { noremap = true })
-map('n','<leader>F', '<cmd>lua require("telescope.builtin").git_status()<cr>', { noremap = true })
-map('n','<leader>g', '<cmd>lua require("telescope.builtin").live_grep()<cr>', { noremap = true })
-map('n','<leader>h', '<cmd>lua require("telescope.builtin").help_tags()<cr>', { noremap = true })
-map('n','<leader>b', '<cmd>lua require("telescope.builtin").buffers()<cr>', { noremap = true })
-map('n','<leader>s', '<cmd>lua require("telescope.builtin").grep_string()<cr>', { noremap = true })
+map('n',';f', '<cmd>lua require("telescope.builtin").find_files()<cr>', { noremap = true })
+map('n',';F', '<cmd>lua require("telescope.builtin").git_status()<cr>', { noremap = true })
+map('n',';g', '<cmd>lua require("telescope.builtin").live_grep()<cr>', { noremap = true })
+map('n',';h', '<cmd>lua require("telescope.builtin").help_tags()<cr>', { noremap = true })
+map('n',';b', '<cmd>lua require("telescope.builtin").buffers()<cr>', { noremap = true })
+map('n',';s', '<cmd>lua require("telescope.builtin").grep_string()<cr>', { noremap = true })
+
 
 -- Copy paste
 map('n','<leader>y', '"+yy', { noremap = true })
@@ -333,9 +277,6 @@ require('lualine').setup {
   },
 }
 
--- Comment
-require('Comment').setup()
-
 -- Sneak
 g['sneak#label'] = 1
 map('n','f', '<Plug>Sneak_f', { })
@@ -352,23 +293,3 @@ map('n','<leader>rj', '<cmd>vertical resize +20<cr>', {})
 map('n','<leader>rk', '<cmd>vertical resize -20<cr>', {})
 map('n','<leader>rh', '<cmd>resize +10<cr>', {})
 map('n','<leader>rl', '<cmd>resize -10<cr>', {})
-
-
--- Close tags
---[[
-vim.cmd([[
-let g:closetag_filenames = '*.html,*.xhtml,*.phtml'
-let g:closetag_xhtml_filenames = '*.xhtml,*.jsx,*.tsx'
-let g:closetag_filetypes = 'html,xhtml,phtml'
-let g:closetag_xhtml_filetypes = 'xhtml,jsx,tsx'
-let g:closetag_regions = {
-    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
-    \ 'javascript.jsx': 'jsxRegion',
-    \ 'typescriptreact': 'jsxRegion,tsxRegion',
-    \ 'javascriptreact': 'jsxRegion',
-    \ }
-let g:closetag_shortcut = '>'
-let g:closetag_close_shortcut = '<leader>>'
-]]
-
-
