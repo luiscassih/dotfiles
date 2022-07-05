@@ -1,0 +1,17 @@
+set hidden on
+set icons
+cmd mkdir ${{
+    printf "directory: "
+    read -e dir
+    mkdir -p "$dir"
+}}
+
+cmd newfile ${{
+    printf "file: "
+    read -e file
+    touch "$file"
+}}
+
+map ad :mkdir
+map af :newfile
+map D :delete

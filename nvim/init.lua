@@ -49,6 +49,7 @@ vim.call('plug#begin', '~/.config/nvim/plugged')
 
   Plug 'numToStr/Comment.nvim'
   Plug 'ptzz/lf.vim'
+  -- Plug 'vifm/vifm.vim'
   Plug 'voldikss/vim-floaterm'
 
   Plug 'kyazdani42/nvim-web-devicons'
@@ -88,14 +89,14 @@ g.mapleader = ' '
 map('i','<S-Tab>', '<C-d>', { noremap = true })
 
 -- Delete without yank
-map('n','<leader>d', '""d', { noremap = true })
-map('n','<leader>D', '""D', { noremap = true })
-map('v','<leader>d', '""d', { noremap = true })
-map('n','<leader>c', '""c', { noremap = true })
-map('v','<leader>c', '""c', { noremap = true })
-map('n','d', '"_d', { noremap = true })
-map('v','d', '"_d', { noremap = true })
-map('n','x', '"_x', { noremap = true })
+-- map('n','<leader>d', '""d', { noremap = true })
+-- map('n','<leader>D', '""D', { noremap = true })
+-- map('v','<leader>d', '""d', { noremap = true })
+-- map('n','<leader>c', '""c', { noremap = true })
+-- map('v','<leader>c', '""c', { noremap = true })
+-- map('n','d', '"_d', { noremap = true })
+-- map('v','d', '"_d', { noremap = true })
+-- map('n','x', '"_x', { noremap = true })
 
 -- git
 
@@ -218,6 +219,7 @@ saga.init_lsp_saga {
 }
 
 --map('n','gh', '<cmd>lua require("lspsaga.hover").render_hover_doc()<CR>', { noremap = true })
+map('n','gA', '<cmd>lua require("lspsaga.codeaction").code_action()<CR>', { noremap = true })
 map('n','gD', '<cmd>lua require("lspsaga.provider").preview_definition()<CR>', { noremap = true })
 --map('n','gr', '<cmd>lua require("lspsaga.provider").lsp_finder()<CR>', { noremap = true })
 map('n','gR', '<cmd>lua require("lspsaga.rename").rename()<CR>', { noremap = true })
