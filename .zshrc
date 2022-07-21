@@ -99,7 +99,9 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias v=nvim
 alias t=tmux
+alias tmuxsource="tmux source-file ~/.config/tmux/tmux.conf"
 alias ta="tmux a -t"
+
 lt() {
   tree -I "node_modules" "$@" -C | less -r
 }
@@ -126,10 +128,12 @@ source ~/.config/lf/icons
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 source /usr/local/opt/powerlevel10k/powerlevel10k.zsh-theme
 
-export PNPM_HOME="/Users/l/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-
 # cargo
-source .cargo/env
+source ~/.cargo/env
 
 fortune | cowsay
+
+# pnpm
+export PNPM_HOME="/Users/l/Library/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end

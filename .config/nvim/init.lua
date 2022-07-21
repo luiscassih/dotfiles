@@ -1,60 +1,10 @@
 -- Plugins
-local Plug = vim.fn['plug#']
-vim.call('plug#begin', '~/.config/nvim/plugged')
-  Plug 'nvim-lua/plenary.nvim'
-  Plug 'nvim-lua/popup.nvim'
-  Plug 'nvim-telescope/telescope.nvim'
-  Plug "williamboman/nvim-lsp-installer"
-  Plug 'neovim/nvim-lspconfig'
-  --Plug 'kabouzeid/nvim-lspinstall'
-  --
-  -- Plug 'glepnir/lspsaga.nvim'
-  Plug 'tami5/lspsaga.nvim'
-  --Plug 'nvim-lua/completion-nvim'
-  Plug('nvim-treesitter/nvim-treesitter', {['do'] = function ()
-    vim.cmd('TSUpdate')
-    end
-  })
-  Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-  Plug 'tpope/vim-fugitive'
-  Plug 'airblade/vim-gitgutter'
-
-  -- theming
-  Plug 'joshdick/onedark.vim'
-  Plug 'drewtempelmeyer/palenight.vim'
-  Plug 'luiscassih/palenight-dash.vim'
-
-
-  --Plug 'psliwka/vim-smoothie'
-
-  --compe
-  Plug 'hrsh7th/cmp-nvim-lsp'
-  Plug 'hrsh7th/cmp-buffer'
-  Plug 'hrsh7th/nvim-cmp'
-  --Plug 'L3MON4D3/LuaSnip'
-  --Plug 'saadparwaiz1/cmp_luasnip'
-  Plug 'hrsh7th/cmp-path'
-  Plug 'hrsh7th/cmp-cmdline'
-  -- Plug 'hrsh7th/cmp-vsnip'
-  -- Plug 'hrsh7th/vim-vsnip'
-  -- statusbar
-  Plug 'hoob3rt/lualine.nvim'
-  Plug 'ryanoasis/vim-devicons'
-
-  -- sneak
-  Plug 'justinmk/vim-sneak'
-
-  --Plug 'jiangmiao/auto-pairs'
-  Plug 'airblade/vim-rooter'
-
-  Plug 'numToStr/Comment.nvim'
-  Plug 'ptzz/lf.vim'
-  Plug 'voldikss/vim-floaterm'
-
-  Plug 'kyazdani42/nvim-web-devicons'
-  Plug 'folke/trouble.nvim'
-  --Plug 'alvan/vim-closetag'
-vim.call('plug#end')
+vim.cmd([[
+  augroup packer_user_config
+    autocmd!
+    autocmd BufWritePost plugins.lua source <afile> | PackerCompile
+  augroup end
+]])
 
 -- settings
 local opt = vim.opt
@@ -76,6 +26,7 @@ opt.hlsearch = false
 opt.undodir = os.getenv( "HOME" ) .. "/.config/nvim/undodir"
 opt.undofile = true
 opt.hidden = true
+opt.clipboard = "unnamedplus"
 
 -- globals
 local g = vim.g
@@ -88,14 +39,14 @@ g.mapleader = ' '
 map('i','<S-Tab>', '<C-d>', { noremap = true })
 
 -- Delete without yank
-map('n','<leader>d', '""d', { noremap = true })
-map('n','<leader>D', '""D', { noremap = true })
-map('v','<leader>d', '""d', { noremap = true })
-map('n','<leader>c', '""c', { noremap = true })
-map('v','<leader>c', '""c', { noremap = true })
-map('n','d', '"_d', { noremap = true })
-map('v','d', '"_d', { noremap = true })
-map('n','x', '"_x', { noremap = true })
+-- map('n','<leader>d', '""d', { noremap = true })
+-- map('n','<leader>D', '""D', { noremap = true })
+-- map('v','<leader>d', '""d', { noremap = true })
+-- map('n','<leader>c', '""c', { noremap = true })
+-- map('v','<leader>c', '""c', { noremap = true })
+-- map('n','d', '"_d', { noremap = true })
+-- map('v','d', '"_d', { noremap = true })
+-- map('n','x', '"_x', { noremap = true })
 
 -- git
 
@@ -106,26 +57,19 @@ map('n','<leader>gp', '<Plug>(GitGutterPreviewHunk)', {})
 map('n','<leader>gb', '<cmd>Git blame<cr>', { noremap = true })
 
 -- theming
-opt.termguicolors = true
-opt.background = 'dark'
---vim.cmd([[
---let g:palenight_color_overrides = {
---\    'black': { 'gui': '#101114', "cterm": "0", "cterm16": "0" },
---\    'blue': { 'gui': '#5B85FF', "cterm": "39", "cterm16": "4" },
---\    'red': { 'gui': '#F54784', "cterm": "204", "cterm16": "1" },
---\    'green': { 'gui': '#4EBC6B', "cterm": "114", "cterm16": "2" },
---\    'white': { 'gui': '#DBE5ED', "cterm": "145", "cterm16": "7" },
---\    'yellow': { 'gui': '#ED9C50', "cterm": "180", "cterm16": "3" },
---\}
---]])
---vim.cmd('colorscheme palenight')
-vim.cmd('colorscheme palenightdash')
-vim.cmd([[
-hi Normal guibg=NONE ctermbg=NONE
-]])
+-- opt.termguicolors = true
+-- opt.background = 'dark'
+-- vim.cmd('colorscheme palenightdash')
+local ok, catppuccin = pcall(require, "catppuccin")
+if not ok then return end
+catppuccin.setup {}
+vim.cmd[[colorscheme catppuccin]]
+--vim.cmd('colorscheme catppuccin')
+-- vim.cmd([[
+-- hi Normal guibg=NONE ctermbg=NONE
+-- ]])
 
 -- completion-nvim
---opt.completeopt = "menuone,noinsert,noselect"
 opt.completeopt = "menu,menuone,noselect"
 -- opt.shortmess = opt.shortmess + "c"
 --map('i','C-<space>', '<Plug>(completion_trigger)', { expr = true })
@@ -133,16 +77,21 @@ local cmp = require'cmp'
 cmp.setup({
   snippet = {
     expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body)
       --require('luasnip').lsp_expand(args.body)
       --vim.fn["vsnip#anonymous"](args.body)
     end,
+  },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
   },
   mapping = cmp.mapping.preset.insert({
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.close(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    ['<CR>'] = cmp.mapping.confirm({ select = false }),
   }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
@@ -183,7 +132,8 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'tsserver', 'html', 'tailwindcss' }
+-- lsp servers
+local servers = { 'tsserver', 'html', 'tailwindcss', 'rust_analyzer' }
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 --capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -206,6 +156,8 @@ for _, server in pairs(servers) do
 end
 ]]
 
+require"fidget".setup{}
+
 -- lspsaga
 local saga = require 'lspsaga'
 
@@ -218,6 +170,7 @@ saga.init_lsp_saga {
 }
 
 --map('n','gh', '<cmd>lua require("lspsaga.hover").render_hover_doc()<CR>', { noremap = true })
+map('n','gA', '<cmd>lua require("lspsaga.codeaction").code_action()<CR>', { noremap = true })
 map('n','gD', '<cmd>lua require("lspsaga.provider").preview_definition()<CR>', { noremap = true })
 --map('n','gr', '<cmd>lua require("lspsaga.provider").lsp_finder()<CR>', { noremap = true })
 map('n','gR', '<cmd>lua require("lspsaga.rename").rename()<CR>', { noremap = true })
@@ -278,6 +231,7 @@ require('telescope').setup({
   defaults = {
     hidden=true,
     no_ignore=true,
+    path_display={"smart"},
   }
 });
 
@@ -306,30 +260,25 @@ map('n','<leader>ww', '<cmd>w<cr>', { noremap = true })
 -- status bar
 require('lualine').setup {
   options = {
-    theme = 'onedark',
+    theme = 'catppuccin',
   },
   sections = {
     lualine_a = {'mode'},
     lualine_b = {'branch'},
-    lualine_c = {},
-    lualine_x = {'encoding', 'fileformat', 'filetype'},
-    lualine_y = {'progress'},
-    lualine_z = {'location'}
-  },
-  tabline = {
-    lualine_a = {},
-    lualine_b = {'diff',
-                  {'diagnostics', sources={'nvim_lsp', 'coc'}}},
     lualine_c = {
       {
         'filename',
-        file_status = true,
         path = 1,
+        file_status = true,
+      },
+      {
+        'diff',
+        {'diagnostics', sources={'nvim_lsp', 'coc'}}
       }
     },
-    lualine_x = {},
-    lualine_y = {},
-    lualine_z = {}
+    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
   },
 }
 
@@ -370,5 +319,4 @@ let g:closetag_regions = {
 let g:closetag_shortcut = '>'
 let g:closetag_close_shortcut = '<leader>>'
 ]]
-
 
